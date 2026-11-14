@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#121212">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Trading Discipline Locker"
+        android:textColor="#FFFFFF"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="15 Min Limit | Auto-Unlock at 02:00 AM"
+        android:textColor="#AAAAAA"
+        android:textSize="14sp"
+        android:layout_marginBottom="30dp"/>
+
+    <!-- MT5 Switch -->
+    <Switch
+        android:id="@+id/switch_mt5"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="MetaTrader 5 (MT5)"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:checked="true"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- XM 360 Switch -->
+    <Switch
+        android:id="@+id/switch_xm"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="XM 360"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:checked="true"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- TradingView Switch -->
+    <Switch
+        android:id="@+id/switch_tv"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="TradingView"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:checked="true"
+        android:layout_marginBottom="30dp"/>
+
+    <TextView
+        android:id="@+id/status_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Status: Active (PIN: 4321 Required to Change)"
+        android:textColor="#4CAF50"
+        android:textSize="14sp"/>
+
+</LinearLayout>
