@@ -5,55 +5,50 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+    build:
+      runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    - name: Create simple project structure
-      run: |
-        mkdir -p app/src/main/java/com/trading/locker
-        mkdir -p app/src/main/res/layout
-        mkdir -p app/src/main/res/values
-        
-        # Move files to correct Android project folders if they are in root
-        [ -f MainActivity.java ] && mv MainActivity.java app/src/main/java/com/trading/locker/ || true
-        [ -f AndroidManifest.xml ] && mv AndroidManifest.xml app/src/main/res/ || true
-        [ -f activity_main.xml ] && mv activity_main.xml app/src/main/res/layout/ || true
+      - name: Setup Android & Gradle Project Files
+        run: |
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+          
+          # आवश्यक बेसिक फ़ाइलें बनाना
+          if [ ! -f app/build.gradle ]; then
+            mkdir -p app
+            echo "plugins { id 'com.android.application' }" > app/build.gradle
+            echo "android { namespace 'com.trading.locker' compileSdk 34 defaultConfig { applicationId 'com.trading.locker' minSdk 21 targetSdk 34 versionCode 1 versionName '1.0' } }" >> app/build.gradle
+          fi
+          if [ ! -f build.gradle ]; then
+            echo "buildscript { repositories { google() mavenCentral() } dependencies { classpath 'com.android.tools.build:gradle:8.1.0' } }" > build.gradle
+            echo "allprojects { repositories { google() mavenCentral() } }" >> build.gradle
+          fi
+          if [ ! -f settings.gradle ]; then
+            echo "rootProject.name = 'Trading Locker'" > settings.gradle
+            echo "include ':app'" >> settings.gradle
+          fi
 
-        # Create minimal build.gradle files if missing
-        if [ ! -f app/build.gradle ]; then
-          echo "plugins { id 'com.android.application' }" > app/build.gradle
-          echo "android { namespace 'com.trading.locker' compileSdk 33 defaultConfig { applicationId 'com.trading.locker' minSdk 21 targetSdk 33 versionCode 1 versionName '1.0' } }" >> app/build.gradle
-        fi
+          # अगर gradlew नहीं है, तो Gradle wrapper जनरेट करें
+          if [ ! -f gradlew ]; then
+            gradle wrapper
+          fi
+          
+          chmod +x gradlew
 
-        if [ ! -f build.gradle ]; then
-          echo "buildscript { repositories { google() mavenCentral() } dependencies { classpath 'com.android.tools.build:gradle:7.4.2' } }" > build.gradle
-          echo "allprojects { repositories { google() mavenCentral() } }" >> build.gradle
-        fi
+      - name: Build with Gradle
+        run: ./gradlew assembleDebug
 
-        if [ ! -f settings.gradle ]; then
-          echo "rootProject.name = 'Trading Locker'" > settings.gradle
-          echo "include ':app'" >> settings.gradle
-        fi
-
-        chmod +x gradlew || true
-
-    - name: Build APK with Gradle
-      run: ./gradlew assembleDebug || echo "Gradle build running"
-
-    - name: Upload APK Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: trading-locker-apk
-        path: |
-          app/build/outputs/apk/debug/*.apk
-          **/*.apk
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: app/build/outputs/apk/debug/*.apk
