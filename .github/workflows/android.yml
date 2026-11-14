@@ -18,11 +18,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Android & Gradle Project Files
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Create local.properties and basic files
         run: |
           echo "sdk.dir=$ANDROID_HOME" > local.properties
           
-          # आवश्यक बेसिक फ़ाइलें बनाना
           if [ ! -f app/build.gradle ]; then
             mkdir -p app
             echo "plugins { id 'com.android.application' }" > app/build.gradle
@@ -37,15 +39,8 @@ jobs:
             echo "include ':app'" >> settings.gradle
           fi
 
-          # अगर gradlew नहीं है, तो Gradle wrapper जनरेट करें
-          if [ ! -f gradlew ]; then
-            gradle wrapper
-          fi
-          
-          chmod +x gradlew
-
       - name: Build with Gradle
-        run: ./gradlew assembleDebug
+        run: gradle assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
